@@ -1,0 +1,338 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Проверка резюме на ATS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600&display=swap">
+<style>
+/* Layout: one narrow column, tool first. Check -> result -> how to fix -> prompt -> next step. */
+:root{
+  --bg:#f3f6f3;
+  --surface:#ffffff;
+  --fg:#1c2623;
+  --muted:#5c6a65;
+  --line:#d8e0dc;
+  --brand:#1f5c4a;
+  --brand-fg:#ffffff;
+  --brand-soft:#e1eee8;
+  --warn:#c4501b;
+  --warn-soft:#fbe9df;
+  --ok-soft:#dcefe5;
+  --mid-soft:#f6efd5;
+  --mid:#7a6410;
+  --font-body:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:"Unbounded","Onest",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101815;--surface:#17221e;--fg:#e6eeea;--muted:#9bb0a8;--line:#2a3a34;
+    --brand:#5fc2a0;--brand-fg:#0c1612;--brand-soft:#1d3029;
+    --warn:#ff9a66;--warn-soft:#38231a;--ok-soft:#1b3328;--mid-soft:#352f14;--mid:#e5cf72;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101815;--surface:#17221e;--fg:#e6eeea;--muted:#9bb0a8;--line:#2a3a34;
+  --brand:#5fc2a0;--brand-fg:#0c1612;--brand-soft:#1d3029;
+  --warn:#ff9a66;--warn-soft:#38231a;--ok-soft:#1b3328;--mid-soft:#352f14;--mid:#e5cf72;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:28px 56px}
+.wrap{max-width:760px;margin-inline:auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--font-display);font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.55rem,5.5vw,2.3rem)}
+h2{font-size:clamp(1.15rem,3.6vw,1.45rem)}
+h3{font-size:1rem;margin:0 0 4px;font-weight:600}
+p{margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:var(--brand);font-weight:600}
+.lead{font-size:1.08rem;color:var(--muted);max-width:60ch}
+.privacy{font-size:.88rem;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+label{display:block;font-weight:600;font-size:.92rem;margin-bottom:6px}
+textarea{width:100%;min-height:210px;resize:vertical;font:inherit;font-size:.92rem;line-height:1.5;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.hint{font-size:.82rem;color:var(--muted);margin-top:6px}
+.sample{display:inline-block;font-size:.76rem;font-weight:600;background:var(--mid-soft);color:var(--mid);padding:2px 8px;border-radius:99px;margin-left:6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,.btn{font:inherit;font-weight:600;font-size:.95rem;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid var(--brand);background:var(--brand);color:var(--brand-fg);text-decoration:none;display:inline-block}
+button.ghost{background:transparent;color:var(--brand)}
+button:disabled{opacity:.5;cursor:default}
+.meter{height:14px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter>i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .5s}
+.score{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.score b{font-family:var(--font-display);font-size:2.4rem;font-weight:600;font-variant-numeric:tabular-nums}
+.score span{color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0}
+.chip{padding:5px 11px;border-radius:99px;font-size:.9rem;font-weight:500}
+.chip.ok{background:var(--ok-soft);color:var(--brand)}
+.chip.miss{background:var(--warn-soft);color:var(--warn)}
+.chip.near{background:var(--mid-soft);color:var(--mid)}
+.legend{display:flex;flex-direction:column;gap:14px}
+.legend h3{display:flex;align-items:center;gap:8px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.93rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+td.bad{color:var(--warn)}
+td.good{color:var(--brand);font-weight:600}
+.steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.steps label{display:flex;gap:12px;align-items:flex-start;font-weight:500;margin:0;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer}
+.steps input{margin-top:4px;width:18px;height:18px;accent-color:var(--brand);flex:none}
+.steps input:checked+span{color:var(--muted);text-decoration:line-through}
+.progress{font-size:.88rem;color:var(--muted)}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:var(--font-body);font-size:.92rem;line-height:1.55;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:14px}
+.where{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.where{grid-template-columns:1fr}}
+.where ul{margin:6px 0 0;padding-left:18px;color:var(--muted);font-size:.93rem}
+.cta{background:var(--brand);color:var(--brand-fg);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.cta h2{color:var(--brand-fg)}
+.cta p{opacity:.92}
+.cta ul{margin:0;padding-left:18px}
+.cta .btn{background:var(--brand-fg);color:var(--brand);border-color:var(--brand-fg);align-self:flex-start}
+.tariffs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.tariffs{grid-template-columns:1fr}}
+.tariffs div{border:1px solid color-mix(in srgb,var(--brand-fg) 45%,transparent);border-radius:8px;padding:12px 14px}
+.tariffs b{display:block}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.meter>i,.toast{transition:none}}
+</style>
+
+<div class="wrap">
+
+<header style="display:flex;flex-direction:column;gap:12px">
+  <div class="eyebrow">Лид-магнит курса «Трудоустройство в Норвегии»</div>
+  <h1>Пройдёт ли ваше резюме ATS-фильтр?</h1>
+  <p class="lead">Вы отправили десятки откликов и не получили ответа. Одна из причин: система отбора не нашла в резюме слова из вакансии. Проверьте это за две минуты.</p>
+  <p class="privacy">Тексты не отправляются никуда. Проверка работает прямо в вашем браузере.</p>
+</header>
+
+<section>
+  <h2>Что происходит с вашим откликом</h2>
+  <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+    <p>Раньше на вакансию приходило 15-20 откликов, теперь работодатели называют цифру 50-80. Прочитать всё глазами никто не успевает, и первый отбор часто отдают ATS (системе отбора резюме) или ИИ.</p>
+    <p>ATS сравнивает слова в вашем резюме со словами в вакансии и поднимает наверх тех, у кого совпадений больше. Старые системы не понимают синонимы: для них «lagspiller» и «god samarbeidsevne» это два разных слова, хотя смысл один.</p>
+  </div>
+</section>
+
+<section id="check">
+  <h2>Проверка резюме под вакансию</h2>
+  <div class="grid2">
+    <div>
+      <label for="vac">1. Текст вакансии<span class="sample" id="s1">пример</span></label>
+      <textarea id="vac" spellcheck="false"></textarea>
+      <p class="hint">Скопируйте объявление целиком, лучше с finn.no или LinkedIn.</p>
+    </div>
+    <div>
+      <label for="res">2. Текст вашего резюме<span class="sample" id="s2">пример</span></label>
+      <textarea id="res" spellcheck="false"></textarea>
+      <p class="hint">Вставьте текст резюме, не файл. Подойдёт и сопроводительное письмо.</p>
+    </div>
+  </div>
+  <div class="row">
+    <button id="go" type="button">Проверить</button>
+    <button id="clear" class="ghost" type="button">Очистить и вставить своё</button>
+  </div>
+
+  <div id="result" class="panel" style="display:flex;flex-direction:column;gap:16px" aria-live="polite">
+    <div class="score">
+      <b id="pct">0%</b>
+      <span id="verdict"></span>
+    </div>
+    <div class="meter" aria-hidden="true"><i id="bar" style="width:0%"></i></div>
+    <div class="legend">
+      <div>
+        <h3>Слова вакансии, которые в резюме уже есть</h3>
+        <ul class="chips" id="okList"></ul>
+      </div>
+      <div>
+        <h3>Есть похожее слово, но в другой форме</h3>
+        <ul class="chips" id="nearList"></ul>
+        <p class="hint">Для старой ATS это может быть другое слово. Если смысл верный, напишите так, как в вакансии.</p>
+      </div>
+      <div>
+        <h3>Слов нет в резюме</h3>
+        <ul class="chips" id="missList"></ul>
+        <div class="row" style="margin-top:6px"><button id="copyMiss" class="ghost" type="button">Скопировать недостающие слова</button></div>
+      </div>
+    </div>
+    <p class="hint">Это приблизительная оценка по совпадению слов, а не настоящий балл какой-то системы. Вписывайте только то, что действительно про вас. Выдуманный опыт вскроется на собеседовании.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Один смысл, разные слова</h2>
+  <p class="lead" style="font-size:1rem">Если в вакансии написано одно, а у вас другое, старая ATS не засчитает совпадение. Пишите так, как в объявлении.</p>
+  <div class="tbl panel" style="padding:6px">
+    <table>
+      <thead><tr><th>В вакансии</th><th>У вас в резюме</th><th>Что видит старая ATS</th></tr></thead>
+      <tbody>
+        <tr><td class="good">lagspiller</td><td class="bad">god samarbeidsevne</td><td>Два разных слова, плюса нет</td></tr>
+        <tr><td class="good">samarbeidsvillig kandidat</td><td class="bad">jeg er flink til å jobbe i team</td><td>Нет совпадения, хотя смысл тот же</td></tr>
+        <tr><td class="good">lagspiller</td><td class="good">lagspiller</td><td>Совпадение, плюс к рейтингу</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">ИИ-системы сопоставляют такие фразы по смыслу. Старые ATS нет. Заранее не угадаешь, какая стоит у работодателя, поэтому безопаснее писать словами вакансии.</p>
+</section>
+
+<section>
+  <h2>Есть ли ATS у этого работодателя</h2>
+  <p class="lead" style="font-size:1rem">Точно сказать нельзя, но ориентиры есть.</p>
+  <div class="where">
+    <div class="panel">
+      <h3>Скорее всего нет</h3>
+      <ul>
+        <li>Отклик прямо в finn.no: там простой встроенный модуль без ATS и ИИ</li>
+        <li>Маленькая компания, например 10 человек</li>
+        <li>Магазины, кроме крупных сетей</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Скорее всего есть</h3>
+      <ul>
+        <li>Объявление перекидывает на отдельный сайт рекрутера со списком вакансий</li>
+        <li>Крупные компании с большим потоком откликов</li>
+        <li>Коммуны и госструктуры: ATS там стоят давно, насколько там ИИ, неизвестно</li>
+      </ul>
+    </div>
+  </div>
+  <p class="hint">Сомневаетесь, значит, пишите словами вакансии. Это ничего не стоит и не вредит.</p>
+</section>
+
+<section>
+  <h2>Пять шагов перед каждым откликом</h2>
+  <p class="progress" id="prog">Отмечено 0 из 5</p>
+  <ul class="steps" id="steps">
+    <li><label><input type="checkbox" data-i="0"><span>Откройте вакансию и выпишите 8-10 ключевых слов и оборотов дословно</span></label></li>
+    <li><label><input type="checkbox" data-i="1"><span>Проверьте, где вы можете честно написать то же самое про свой опыт</span></label></li>
+    <li><label><input type="checkbox" data-i="2"><span>Перепишите блоки опыта и навыков этими словами. Не списком, а в фразах и примерах</span></label></li>
+    <li><label><input type="checkbox" data-i="3"><span>Добавьте цифры и результаты. Они цепляют взгляд рекрутера, когда резюме открывают</span></label></li>
+    <li><label><input type="checkbox" data-i="4"><span>Сохраните отдельную версию под эту вакансию. Одно резюме на все вакансии не работает</span></label></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Запрос для ChatGPT</h2>
+  <p class="lead" style="font-size:1rem">Если вакансий много и разбирать каждую вручную нет сил, отдайте сравнение ИИ. Результат проверьте сами.</p>
+  <pre id="prompt">Вот текст вакансии: [вставьте]
+Вот моё резюме: [вставьте]
+
+Сравни их. Покажи, каких ключевых слов и формулировок из вакансии не хватает в моём резюме. Предложи, как переписать только те блоки, где я могу честно использовать эти слова.
+Ничего не выдумывай и не добавляй опыт, которого у меня нет. Не переписывай всё резюме целиком.</pre>
+  <div class="row"><button id="copyPrompt" type="button">Скопировать запрос</button></div>
+  <p class="hint">Если пишете по-норвежски через ИИ, вы должны понимать каждое слово. На собеседовании вас могут попросить прокомментировать написанное.</p>
+</section>
+
+<section class="cta">
+  <h2>Слова проходят фильтр. Дальше решает человек</h2>
+  <p>Чтобы вас пригласили, одного совпадения слов мало. Нужно показать нужный опыт, не потеряться на фоне норвежцев и написать письмо, которое читают. Именно это мы разбираем на курсе «Трудоустройство в Норвегии» на ваших резюме.</p>
+  <ul>
+    <li>29 уроков, все уже открыты</li>
+    <li>8 живых онлайн-вебинаров: разбираем вашу ситуацию и отвечаем на вопросы</li>
+    <li>Список крупных работодателей и правила, как выходить на них напрямую</li>
+  </ul>
+  <div class="tariffs">
+    <div><b>Базовый - 1 490 крон</b>0% на 3 месяца, около 497 в месяц</div>
+    <div><b>VIP - 3 540 крон</b>0% на 6 месяцев, 590 в месяц. Личные вопросы экспертам</div>
+  </div>
+  <p>Это последний поток курса в таком формате.</p>
+  <a class="btn" href="https://daria-norway.com/job" target="_blank" rel="noopener">Узнать про курс</a>
+  <p style="font-size:.9rem">Или напишите 17 в директ Instagram, и мы пришлём подробности.</p>
+</section>
+
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- analysis (pure) ---------- */
+var STOP = new Set(("og i jeg det at en et den til er som på de med han av ikke der så var meg seg men har om vi min mitt ha hadde hun nå over da ved fra du ut sin dem oss opp man kan hans hvor eller hva skal selv her alle vil bli ble blitt kunne inn når være kom noen noe ville dere deres kun etter ned skulle denne for deg mot meget dette disse uten hvordan ingen din ditt blir samme mellom vår hver hvem hvis både bare enn fordi før mange også slik vært siden henne søker stilling fordel gode godt fast vårt våre dine tilbyr gjennom hos fra hele samt ogsa dine dette deg ditt " +
+"about also been being could from have into more must other our out should some such than that their them then there these they this those through very were what when where which while will with would your you and the for are can who work working job role team within across able including").split(/\s+/));
+
+function tokens(text){
+  var m = String(text||"").toLowerCase().match(/[\p{L}][\p{L}\-]*/gu) || [];
+  return m.map(function(w){return w.replace(/^-+|-+$/g,"");}).filter(function(w){return w.length>=4;});
+}
+
+function analyze(vac,res){
+  var vt = tokens(vac), freq = {}, order = [];
+  vt.forEach(function(w){
+    if(STOP.has(w)) return;
+    if(freq[w]===undefined){freq[w]=0;order.push(w);}
+    freq[w]++;
+  });
+  var words = order.map(function(w,i){return {w:w,f:freq[w],i:i};})
+    .sort(function(a,b){return b.f-a.f || a.i-b.i;})
+    .slice(0,25).map(function(o){return o.w;});
+  var rset = new Set(tokens(res)), rlist = Array.from(rset);
+  var ok=[], near=[], miss=[];
+  words.forEach(function(w){
+    if(rset.has(w)){ok.push(w);return;}
+    var stem = w.slice(0,5), hit = null;
+    if(w.length>=6){
+      for(var k=0;k<rlist.length;k++){ if(rlist[k].length>=6 && rlist[k].slice(0,5)===stem){hit=rlist[k];break;} }
+    }
+    if(hit) near.push({w:w,has:hit}); else miss.push(w);
+  });
+  var total = words.length;
+  return {total:total, ok:ok, near:near, miss:miss, pct: total? Math.round(ok.length/total*100):0};
+}
+
+/* ---------- UI ---------- */
+var SAMPLE_VAC = "Vi søker en lagermedarbeider til vårt lager i Stavanger. Du vil jobbe med plukking, pakking og varemottak.\nVi søker deg som er lagspiller, har god samarbeidsevne og er serviceinnstilt. Erfaring fra lager eller logistikk er en fordel. Truckførerbevis T4 er en fordel.\nDu må ha gode norskkunnskaper, både muntlig og skriftlig. Vi tilbyr et godt arbeidsmiljø og fast stilling.";
+var SAMPLE_RES = "Erfaring: jobbet 3 år på lager. Plukket og pakket varer hver dag. Har truckførerbevis. Flink til å jobbe i team. Snakker norsk og engelsk.";
+function $(id){return document.getElementById(id);}
+var vacEl=$("vac"), resEl=$("res");
+vacEl.value=SAMPLE_VAC; resEl.value=SAMPLE_RES;
+
+function toast(msg){var t=$("toast");t.textContent=msg;t.className="toast on";setTimeout(function(){t.className="toast";},1800);}
+function copy(text,msg){
+  function fb(){
+    var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");toast(msg);}catch(e){toast("Выделите текст и скопируйте вручную");}
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){toast(msg);},fb);}else fb();
+}
+function fill(ul,items,cls,fmt){
+  ul.innerHTML="";
+  if(!items.length){var li=document.createElement("li");li.className="hint";li.textContent="Нет";ul.appendChild(li);return;}
+  items.forEach(function(it){var li=document.createElement("li");li.className="chip "+cls;li.textContent=fmt?fmt(it):it;ul.appendChild(li);});
+}
+var lastMiss=[];
+function run(){
+  if(!vacEl.value.trim()||!resEl.value.trim()){toast("Вставьте и вакансию, и резюме");return;}
+  var r=analyze(vacEl.value,resEl.value);
+  $("pct").textContent=r.pct+"%";
+  $("bar").style.width=r.pct+"%";
+  $("verdict").textContent = r.pct>=70?"Хорошее совпадение с языком вакансии":(r.pct>=40?"Среднее совпадение: есть что добавить":"Мало совпадений: система может вас не заметить");
+  fill($("okList"),r.ok,"ok");
+  fill($("nearList"),r.near,"near",function(o){return o.w+" (у вас: "+o.has+")";});
+  fill($("missList"),r.miss,"miss");
+  lastMiss=r.miss;
+  $("copyMiss").disabled=!r.miss.length;
+}
+$("go").addEventListener("click",run);
+$("clear").addEventListener("click",function(){
+  vacEl.value="";resEl.value="";$("s1").hidden=true;$("s2").hidden=true;vacEl.focus();
+});
+[["vac","s1"],["res","s2"]].forEach(function(p){$(p[0]).addEventListener("input",function(){$(p[1]).hidden=true;});});
+$("copyMiss").addEventListener("click",function(){copy(lastMiss.join(", "),"Слова скопированы");});
+$("copyPrompt").addEventListener("click",function(){copy($("prompt").textContent,"Запрос скопирован");});
+
+/* checklist, remembered per viewer */
+var boxes=Array.prototype.slice.call(document.querySelectorAll("#steps input"));
+function prog(){var n=boxes.filter(function(b){return b.checked;}).length;$("prog").textContent="Отмечено "+n+" из 5";}
+try{var saved=JSON.parse(localStorage.getItem("ats-steps")||"[]");boxes.forEach(function(b,i){b.checked=!!saved[i];});}catch(e){}
+boxes.forEach(function(b){b.addEventListener("change",function(){
+  prog();
+  try{localStorage.setItem("ats-steps",JSON.stringify(boxes.map(function(x){return x.checked;})));}catch(e){}
+});});
+prog();
+run();
+</script>
+
+</body></html>
